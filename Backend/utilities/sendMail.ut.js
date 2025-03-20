@@ -1,10 +1,12 @@
 import { transporter } from "../configs/nodemailer.config.js";
+import { configDotenv } from "dotenv";
+configDotenv()
 
 export async function send_Mail(email, otp) {
     try {
 
         const info = await transporter.sendMail({
-            from: '"Gangwar" gangwarprashant84@gmail.com',
+            from: `"Gangwar" ${process.env.EMAIL}`,
             to: email,  // No need for template literals (`${email}`)
             subject: "Hello ✔",
             text: "Hello world?",

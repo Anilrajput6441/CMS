@@ -115,14 +115,21 @@ export const requestChangePassword = async (req,res) => {
 
 export const ChangePassword = async (req,res) => {
     try {
-        const {OTP} = req.body;
+        const {OTP,newPassword,oldPassword} = req.body;
         const admin = req.admin;
-        const {newPassword} = req.body;
 
-        admin.password = newPassword
-        await admin.save()
+        if(admin.OTP !== OTP)  return res.send('Incorrect OTP');
 
-        res.send('Password Save Successfully');
+        const result = await bcrypt.compare(oldPassword, admin.password)
+            
+        if(!result) return res.send('Incorrect Password');
+
+        const hashPassword = await bcrypt.hash(newPassword,10);
+        admin.password = hashPassword;
+        admin.OTP = null;
+        await admin.save();
+
+        res.status(202).json({Message: 'Password Save Successfully', admin});
     } catch (error) {
         res.status(500).json({Success: false, Message: 'Server Error'})
     }
