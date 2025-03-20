@@ -97,8 +97,15 @@ export const login = async (req,res)=>{
     }
 }
 
+export const logout = async (req,res)=>{
+    try {
+        res.cookie('token','')
+        res.send('Logout')
+    } catch (error) {
+        res.status(500).json({Success: false, Message: 'Server Error', Error: error.message})
+    }
+}
 
-// Next Day-------------
 export const requestChangePassword = async (req,res) => {
     try {
         const admin = req.admin
@@ -133,7 +140,55 @@ export const ChangePassword = async (req,res) => {
     } catch (error) {
         res.status(500).json({Success: false, Message: 'Server Error'})
     }
-}//----------------------
+}
+
+export const requestResetPassword = async (req,res) => {
+    try {
+        const {email} = req.body;
+
+        const admin = await AdminModel.findOne({email});
+
+        if(!admin) return res.status(401).json('Incorrect Email')
+        
+        const OTP = OTP_Gen()
+
+        admin.OTP = OTP
+        await admin.save()
+        send_Mail(admin.email,OTP)
+        res.send('OTP is sent to your email');
+    } catch (error) {
+        res.status(500).json({Success: false, Message: 'Server Error'})
+    }
+}
+
+export const acceptResetPassword = async (req,res) => {
+    try {
+        const {email,OTP} = req.body;
+        const admin = await AdminModel.findOne({email});
+
+        if(admin.OTP !== OTP)  return res.send('Incorrect OTP');
+
+        res.status(202).json({Message: 'Enter New Password'});
+    } catch (error) {
+        res.status(500).json({Success: false, Message: 'Server Error'})
+    }
+}
+
+export const ResetPassword = async (req,res) => {
+    try {
+        const {email, newPassword} = req.body;
+        const admin = await AdminModel.findOne({email});
+
+        const hashPassword = await bcrypt.hash(newPassword,10);
+
+        admin.password = hashPassword;
+        await admin.save();
+
+        res.status(202).json({Message: 'Password Change successfully', admin});
+    } catch (error) {
+        res.status(500).json({Success: false, Message: 'Server Error'})
+    }
+}
 
 export const dashboard = async(req,res)=>{
     try {
@@ -144,3 +199,4 @@ export const dashboard = async(req,res)=>{
         res.status(500).json({Success: false, Message: 'Server Error'})
     }
 }
+
