@@ -22,10 +22,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           placeholder="Password"
           className="border-b-1 rounded-full border-[#c3eb2f] p-4 w-full my-2 focus:outline-none"
         />
-        <div className="mt-2 text-xs flex justify-end hover:text-[red]">
+        <div className="mt-2 text-xs flex justify-end ">
           <a href="#">
             {" "}
-            <p>forgot password?</p>
+            <p className="hover:text-[red]">forgot password?</p>
           </a>
         </div>
         <button
