@@ -73,8 +73,8 @@ export function Button({
 export const MovingBorder = ({
   children,
   duration = 3000,
-  rx,
-  ry,
+  // rx,
+  // ry,
   ...otherProps
 }: {
   children: React.ReactNode;
@@ -83,11 +83,13 @@ export const MovingBorder = ({
   ry?: string;
   [key: string]: any;
 }) => {
-  const pathRef = useRef<any>(null);
+  const pathRef = useRef<SVGPathElement>(null);
   const progress = useMotionValue<number>(0);
-  //   const pathRef = useRef<SVGPathElement>(null);
+
   useAnimationFrame((time) => {
-    const length = pathRef.current?.getTotalLength();
+    if (!pathRef.current) return;
+
+    const length = pathRef.current.getTotalLength();
     if (length) {
       const pxPerMillisecond = length / duration;
       progress.set((time * pxPerMillisecond) % length);
@@ -96,11 +98,11 @@ export const MovingBorder = ({
 
   const x = useTransform(
     progress,
-    (val) => pathRef.current?.getPointAtLength(val).x
+    (val) => pathRef.current?.getPointAtLength(val).x ?? 0
   );
   const y = useTransform(
     progress,
-    (val) => pathRef.current?.getPointAtLength(val).y
+    (val) => pathRef.current?.getPointAtLength(val).y ?? 0
   );
 
   const transform = useMotionTemplate`translateX(${x}px) translateY(${y}px) translateX(-50%) translateY(-50%)`;
@@ -115,13 +117,13 @@ export const MovingBorder = ({
         height="100%"
         {...otherProps}
       >
-        <rect
-          fill="none"
-          width="100%"
-          height="100%"
-          rx={rx}
-          ry={ry}
+        {/* FIX: Replace <rect> with a valid <path> */}
+        <path
           ref={pathRef}
+          fill="none"
+          stroke="transparent"
+          strokeWidth="1"
+          d={`M 10,10 H 90 V 90 H 10 Z`} // Creates a simple square path
         />
       </svg>
       <motion.div

@@ -50,7 +50,7 @@ const Hero = () => {
         className="text-lg  lg:mb-8 w-[95%] lg:w-[50vw] flex justify-center roboto-mono font-extrabold "
       />
       <LayoutGridDemo />
-      <div className="absolute mt-70 hidden lg:block  -z-1 bg-gradient-to-b from-[#C3EB2F] to-transparent w-[94vw] rounded-4xl h-[80vh] "></div>
+      <div className="absolute mt-[70px] hidden lg:block z-[-1] bg-gradient-to-b from-[#C3EB2F] to-transparent w-[94vw] rounded-[2rem] h-[100vh]"></div>
 
       <AnimatedTestimonialsDemo />
       <StickyScrollRevealDemo />
